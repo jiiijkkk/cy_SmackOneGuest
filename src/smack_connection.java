@@ -27,6 +27,7 @@ public class smack_connection {
 	private String target = null;
 	private List<String> target_list = new ArrayList<String>();
 	private Chat chat;
+	private List<Chat> chats = new ArrayList<Chat>();
 	private RosterListener roster_listener;
 	private MessageListener myMessageListener;
 	public smack_connection(){
@@ -150,7 +151,11 @@ public class smack_connection {
 			newMessage.setProperty("favoriteColor", "red");
 			Chat this_chat;
 			if(is_admin()){
-				this_chat = this.connection.getChatManager().createChat( this.oppo + "/" + this.target , this.myMessageListener );
+				this_chat = getChatByTarget();
+				if(this_chat == null){
+					this_chat = this.connection.getChatManager().createChat( this.oppo + "/" + this.target , this.myMessageListener );
+					this.chats.add(this_chat);
+				}
 			}
 			else{
 				this_chat = this.chat;
@@ -161,6 +166,17 @@ public class smack_connection {
 				System.out.println("Send message failed!");
 			}
 		}
+	}
+	public Chat getChatByTarget(){
+		for(Chat this_chat : this.chats){
+			if(this_chat.getParticipant().equals(
+					this.oppo + "@" + smack_connection.domain + "/" + this.target
+				)
+			){
+				return this_chat;
+			}
+		}
+		return null;
 	}
 	public void disconnect(){
 		this.myMessageListener = null;
