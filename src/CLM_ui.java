@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CLM_ui {
-	private static String resource = "192.168.200.15";
+	private Scanner scanner = new Scanner( System.in );
 	private smack_connection connection;
 	public static void main(String[] args){
 		CLM_ui ui = new CLM_ui();
@@ -11,14 +11,13 @@ public class CLM_ui {
 	}
 	public void start(){
 		
-		this.connection = new smack_connection(resource , this);
+		this.connection = new smack_connection();
 		
 		if(this.try_connection()){
 			boolean flag = true;
 			while(flag){
-				Scanner scanner = new Scanner(System.in);
 				System.out.println("Please insert \"admin\" , \"guest\" or \"exit\" :");
-				String str = scanner.next();
+				String str = this.scanner.next();
 				if(str.equals("admin")||str.equals("guest")){
 					while(!login(str));
 					this.connection.init_after_connection();
@@ -60,12 +59,11 @@ public class CLM_ui {
 		System.out.println("Reconnecting...");
 	}
     public boolean console(){	// true for exit
-		Scanner scanner = new Scanner(System.in);
 		String str = "default";
 		System.out.println("\"/help\" for help.");
 		while (str != null){
 			//System.out.println("Talk to " + this.connection.get_target() + ":");
-			str = scanner.next();
+			str = this.scanner.next();
 			if(str.equals("/help")){
 				if(this.connection.is_admin()){
 					System.out.println("/list");
@@ -91,14 +89,13 @@ public class CLM_ui {
 		return false;
 	}
 	public boolean login(String str){
-		this.connection = new smack_connection(resource , this);
+		this.connection = new smack_connection();
 		this.connection.connect();
-		Scanner scanner = new Scanner(System.in);
 		String username;
 		String password;
 		username = str;
 		System.out.print("Password : ");
-		password = scanner.next();
+		password = this.scanner.next();
 		boolean is_login=this.connection.login(username,password);
 		if(is_login)System.out.println("Login as : "+username);
 		else System.out.println("Invalid username or password or account not enabled!");
@@ -124,8 +121,7 @@ public class CLM_ui {
 		while(flag){
 			System.out.println("Please select a target :");
 			list();
-			Scanner scanner = new Scanner(System.in);
-			String str = scanner.next();
+			String str = this.scanner.next();
 			if(this.connection.get_list().contains(str)){
 				this.connection.set_target(str);
 				flag = false;

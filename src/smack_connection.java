@@ -3,7 +3,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.MessageListener;
@@ -14,25 +13,25 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 
 public class smack_connection {
-	private String admin = "admin";
-	private String guest = "guest";
+	private static String admin = "admin";
+	private static String guest = "guest";
+	private static String domain = "vopenfire";
+	private static String host = "192.168.200.19";
+	
 	private ConnectionConfiguration config;
 	private Connection connection;
-	private String resource;
-	private String domain = "v-virtualbox";
 	private String username;
 	private String password;
+	private String resource;
 	private String oppo;
 	private String target = null;
 	private List<String> target_list = new ArrayList<String>();
 	private Chat chat;
-	private ChatManager chatmanager;
 	private RosterListener roster_listener;
 	private MessageListener myMessageListener;
-	public smack_connection(String resource , CLM_ui ui){
+	public smack_connection(){
 	   	// Create the configuration for this new connection
-		this.resource=resource;
-		config = new ConnectionConfiguration(this.resource, 5222);
+		config = new ConnectionConfiguration( smack_connection.host , 5222 );
 	   	config.setCompressionEnabled(true);
 	   	config.setSASLAuthenticationEnabled(true);
 	   	this.connection = new XMPPConnection(config);
@@ -49,8 +48,6 @@ public class smack_connection {
 	   	} 
 	}
 	public void init_after_connection(){
-//	   	build_connection_listener();
-    	this.chatmanager = this.connection.getChatManager();
     	build_roster_listener();
     	
 		// create chat
@@ -68,7 +65,7 @@ public class smack_connection {
 				}
     	    }
     	};
-    	this.chat = chatmanager.createChat(this.oppo, myMessageListener);
+    	this.chat = this.connection.getChatManager().createChat(this.oppo, this.myMessageListener);
 	}
 	public boolean login(String username, String password){
 		this.username = username;
@@ -81,20 +78,18 @@ public class smack_connection {
 				this.resource
 			);
 		} catch (XMPPException e1) {
-			// Auto-generated catch block
-			//e1.printStackTrace();
 	    	return false;
 		}
-    	if(this.username.equals(this.admin)){
-    		this.oppo = this.guest + "@" + this.domain;
+    	if(this.username.equals(smack_connection.admin)){
+    		this.oppo = smack_connection.guest + "@" + smack_connection.domain;
     	}
     	else{
-    		this.oppo = this.admin + "@" + this.domain;
+    		this.oppo = smack_connection.admin + "@" + smack_connection.domain;
     	}
     	return true;
 	}
 	public boolean is_admin(){
-		if(this.username.equals(this.admin))return true;
+		if(this.username.equals(smack_connection.admin))return true;
 		else return false;
 	}
 	public String get_target(){
@@ -163,8 +158,7 @@ public class smack_connection {
 			try {
 				this_chat.sendMessage(newMessage);
 			} catch (XMPPException e) {
-				// Auto-generated catch blockl
-				e.printStackTrace();
+				System.out.println("Send message failed!");
 			}
 		}
 	}
