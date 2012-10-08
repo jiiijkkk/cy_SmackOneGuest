@@ -61,16 +61,17 @@ public class smack_connection {
 					
 					if( message.getBody() != null ){
 						System.err.print(message.getBody());
-						System.out.println(" (" + message.getFrom() + ")");
+						System.out.println(" (" + getResourceByFrom( message.getFrom() ) + ")");
 					}
 				}
     	    }
     	};
     	this.chat = this.connection.getChatManager().createChat(this.oppo, this.myMessageListener);
 	}
-	public boolean login(String username, String password){
+	public boolean login(String username, String password, String resource){
 		this.username = username;
 		this.password = password;
+		this.resource = resource;
     	// Log into the server
     	try {
 			this.connection.login(
@@ -105,8 +106,7 @@ public class smack_connection {
 		    public void entriesUpdated(Collection<String> addresses) {
 		    }
 		    public void presenceChanged(Presence presence) {
-		    	String from = presence.getFrom();
-		    	String resource = from.substring(from.lastIndexOf("/") + 1);
+		    	String resource = getResourceByFrom( presence.getFrom() );
 		    	if(presence.isAvailable()){
 		    		add_target(resource);
 		    	}
@@ -119,6 +119,9 @@ public class smack_connection {
 			}
 		};
 		this.connection.getRoster().addRosterListener(roster_listener);
+	}
+	String getResourceByFrom(String from){
+		return from.substring(from.lastIndexOf("/") + 1);
 	}
 	boolean add_target(String resource){
     	if(!this.target_list.contains(resource)){

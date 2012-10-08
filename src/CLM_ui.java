@@ -16,7 +16,7 @@ public class CLM_ui {
 		if(this.try_connection()){
 			boolean flag = true;
 			while(flag){
-				System.out.println("Please insert \"admin\" , \"guest\" or \"exit\" :");
+				System.out.print("Please insert \"admin\" , \"guest\" or \"exit\" : ");
 				String str = this.scanner.next();
 				if(str.equals("admin")||str.equals("guest")){
 					while(!login(str));
@@ -93,10 +93,13 @@ public class CLM_ui {
 		this.connection.connect();
 		String username;
 		String password;
+		String resource;
 		username = str;
 		System.out.print("Password : ");
 		password = this.scanner.next();
-		boolean is_login=this.connection.login(username,password);
+		System.out.print("Resource : ");
+		resource = this.scanner.next();
+		boolean is_login=this.connection.login(username,password,resource);
 		if(is_login)System.out.println("Login as : "+username);
 		else System.out.println("Invalid username or password or account not enabled!");
 		return is_login;
